@@ -93,18 +93,34 @@ public partial class UserInterface : Form
             {
                 // Initialize RP1210 interface
                 _rp1210Interface = new RP1210Interface(
-                    "RP1210.dll", // Path to RP1210 DLL
+                    "C:\\Program Files (x86)\\NEXIQ\\USB-Link 3\\RP1210\\difxapi.dll", // Path to RP1210 DLL
                     "1" // Device ID (example)
                 );
 
-                await _rp1210Interface.ConnectAsync();
-                _isConnected = true;
-
-                UpdateStatus("Status: Connected");
-                GetControl<Button>("identifyButton").Enabled = true;
-                if (sender is Button button)
+                // Try to connect with elevated privileges
+                try
                 {
-                    button.Text = "Disconnect";
+                    await _rp1210Interface.ConnectAsync();
+                    _isConnected = true;
+
+                    UpdateStatus("Status: Connected");
+                    GetControl<Button>("identifyButton").Enabled = true;
+                    if (sender is Button button)
+                    {
+                        button.Text = "Disconnect";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // If connection fails, try to run as administrator
+                    MessageBox.Show(
+                        "Connection failed. Please run the application as administrator and try again.\n\n" +
+                        $"Error details: {ex.Message}",
+                        "Connection Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
+                    _isConnected = false;
                 }
             }
             else

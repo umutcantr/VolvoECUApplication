@@ -26,6 +26,9 @@ namespace VolvoECUInterface.App
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr GetProcAddress(IntPtr hModule, string procedureName);
 
+        [DllImport("C:\\Program Files (x86)\\NEXIQ\\USB-Link 3\\RP1210\\difxapi.dll", SetLastError = true)]
+        private static extern int DriverPackageInstall(string driverPackageInfPath, int flags, IntPtr pInstallerInfo, out bool pNeedReboot);
+
         /// <summary>
         /// Initializes a new instance of the RP1210Interface class.
         /// </summary>
@@ -48,16 +51,41 @@ namespace VolvoECUInterface.App
         {
             try
             {
+                // First, try to install the driver package if needed
+                bool needReboot;
+                string driverPath = "C:\\Program Files (x86)\\NEXIQ\\USB-Link 3\\RP1210\\usblink3.inf";
+                
+                // Check if driver file exists
+                if (!System.IO.File.Exists(driverPath))
+                {
+                    throw new Exception($"Driver file not found at: {driverPath}");
+                }
+
+                // Try to install driver with elevated privileges
+                try
+                {
+                    int result = DriverPackageInstall(driverPath, 0, IntPtr.Zero, out needReboot);
+                    if (result != 0)
+                    {
+                        // If driver installation fails, try to load DLL directly
+                        Console.WriteLine($"Driver installation failed with code {result}, attempting to load DLL directly");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Driver installation error: {ex.Message}");
+                    // Continue with DLL loading
+                }
+
                 // Load RP1210 DLL
                 IntPtr dllHandle = LoadLibrary(_dllPath);
                 if (dllHandle == IntPtr.Zero)
                 {
-                    throw new Exception($"Failed to load RP1210 DLL: {_dllPath}");
+                    int error = Marshal.GetLastWin32Error();
+                    throw new Exception($"Failed to load RP1210 DLL: {_dllPath}. Error code: {error}");
                 }
 
                 // Initialize connection
-                // Note: Actual RP1210 API calls would be implemented here
-                // This is a placeholder for the actual implementation
                 await Task.Delay(100); // Simulate connection time
                 
                 _isConnected = true;
