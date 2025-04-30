@@ -26,7 +26,7 @@ namespace VolvoECUInterface.App
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr GetProcAddress(IntPtr hModule, string procedureName);
 
-        [DllImport("C:\\Program Files (x86)\\NEXIQ\\USB-Link 3\\RP1210\\difxapi.dll", SetLastError = true)]
+        [DllImport("C:\\Program Files (x86)\\NEXIQ\\USB-Link 2\\RP1210\\difxapi.dll", SetLastError = true)]
         private static extern int DriverPackageInstall(string driverPackageInfPath, int flags, IntPtr pInstallerInfo, out bool pNeedReboot);
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace VolvoECUInterface.App
             {
                 // First, try to install the driver package if needed
                 bool needReboot;
-                string driverPath = "C:\\Program Files (x86)\\NEXIQ\\USB-Link 3\\RP1210\\usblink3.inf";
+                string driverPath = "C:\\Program Files (x86)\\NEXIQ\\USB-Link 2\\RP1210\\usblink2.inf";
                 
                 // Check if driver file exists
                 if (!System.IO.File.Exists(driverPath))

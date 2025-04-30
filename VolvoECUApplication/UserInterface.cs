@@ -93,7 +93,7 @@ public partial class UserInterface : Form
             {
                 // Initialize RP1210 interface
                 _rp1210Interface = new RP1210Interface(
-                    "C:\\Program Files (x86)\\NEXIQ\\USB-Link 3\\RP1210\\difxapi.dll", // Path to RP1210 DLL
+                    "C:\\Program Files (x86)\\NEXIQ\\USB-Link 2\\RP1210\\difxapi.dll", // Path to RP1210 DLL
                     "1" // Device ID (example)
                 );
 
